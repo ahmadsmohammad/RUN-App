@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import "./App.css";
+
+const containerStyle = {
+  width: "100%",
+  height: "100%",
+  borderRadius: "12px",
+};
+
+const center = { lat: 35.85, lng: -86.35 };
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app-container">
+      {/* Left side - Map */}
+      <div className="map-container">
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+          <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={13}>
+            <Marker position={center} />
+          </GoogleMap>
+        </LoadScript>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+      {/* Right side - Content */}
+      <div className="content-container">
+        <h1>RUN App</h1>
+        <p>Track your runs and visualize your routes.</p>
+
+        <div className="card">
+          <button onClick={() => setCount((c) => c + 1)}>
+            Count is {count}
+          </button>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
