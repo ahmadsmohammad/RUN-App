@@ -115,8 +115,8 @@ function App() {
     // - type: category of places to find (see Google’s supported "types")
     const request = {
       location: center,
-      radius: radius, // ~2km radius
-      type: "park", // look for restaurants
+      radius: radius, // in meters
+      type: "park", // look for parks
     };
 
     // Create a new PlacesService instance using the loaded map
