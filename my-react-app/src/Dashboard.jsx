@@ -165,15 +165,23 @@ function App() {
                 </LoadScript>
             </div>
 
-            <div className="map-container">
-                <h1>Your Stats!</h1>
+            <div className="dashboard-middle-container">
+                <div className="info-layout">
+                    <h1>Your Stats!</h1>
+
+                    <h2>Previous runs:</h2>
+                    <li>blah</li>
+                    <li>blah</li>
+                    <li>blah</li>
+                    <li>blah</li>
+                </div>
             </div>
 
             {/* RIGHT SIDE: Info panel and button
            -------------------------------------------------------------- */}
             <div className="dashboard-right-container">
                 <div className="info-layout">
-                    <p>Track your runs and visualize your routes.</p>
+                    <p>Pick which runs you have done already near you!</p>
 
                     {/* Button that triggers the nearby restaurant search */}
                     <div className="card">
