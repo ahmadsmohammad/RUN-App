@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 27, 2025 at 07:42 PM
+-- Generation Time: Nov 19, 2025 at 08:39 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -39,6 +39,31 @@ CREATE TABLE `Login` (
 INSERT INTO `Login` (`username`, `password`) VALUES
 ('testuser', 'password123');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `SavedRoutes`
+--
+
+CREATE TABLE `SavedRoutes` (
+  `username` varchar(30) DEFAULT NULL,
+  `latitude` varchar(30) DEFAULT NULL,
+  `longitude` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `UserInfo`
+--
+
+CREATE TABLE `UserInfo` (
+  `username` varchar(30) DEFAULT NULL,
+  `FirstName` varchar(30) DEFAULT NULL,
+  `LastName` varchar(30) DEFAULT NULL,
+  `Email` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -48,6 +73,34 @@ INSERT INTO `Login` (`username`, `password`) VALUES
 --
 ALTER TABLE `Login`
   ADD PRIMARY KEY (`username`);
+
+--
+-- Indexes for table `SavedRoutes`
+--
+ALTER TABLE `SavedRoutes`
+  ADD KEY `username` (`username`);
+
+--
+-- Indexes for table `UserInfo`
+--
+ALTER TABLE `UserInfo`
+  ADD KEY `username` (`username`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `SavedRoutes`
+--
+ALTER TABLE `SavedRoutes`
+  ADD CONSTRAINT `savedroutes_ibfk_1` FOREIGN KEY (`username`) REFERENCES `Login` (`username`);
+
+--
+-- Constraints for table `UserInfo`
+--
+ALTER TABLE `UserInfo`
+  ADD CONSTRAINT `userinfo_ibfk_1` FOREIGN KEY (`username`) REFERENCES `Login` (`username`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
