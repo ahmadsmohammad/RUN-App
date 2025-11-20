@@ -12,6 +12,20 @@ const containerStyle = {
   borderRadius: "12px",
 };
 
+const libraries = ["places"];
+const routeColors = [
+  "#FF0000", // Red
+  "#0000FF", // Blue
+  "#008000", // Green
+  "#FFA500", // Orange
+  "#00FFFF", // Cyan
+  "#00FF00", // Lime
+  "#FF00FF", // Magenta
+  "#000000", // Black
+  "#FFD700", // Gold
+  "#40E0D0"  // Turquoise
+];
+
 function HomePage() {
   const [center, setCenter] = useState({ lat: 35.85, lng: -86.35 });
   const [places, setPlaces] = useState([]);
@@ -63,6 +77,10 @@ function HomePage() {
         lng: places[index].geometry.location.lng(),
       };
 
+      console.log("destination: ", destination.lat, destination.lng)
+      console.log("type: ", typeof destination.lat)
+
+
       service.route(
         {
           origin: center,
@@ -96,7 +114,7 @@ function HomePage() {
 
     service.nearbySearch(request, (results, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        setPlaces(results.slice(0, 7));
+        setPlaces(results.slice(0, 10));
       }
     });
   };
@@ -120,7 +138,7 @@ function HomePage() {
       <div className="map-container">
         <LoadScript
           googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-          libraries={["places"]}
+          libraries={libraries}
         >
           <GoogleMap
             mapContainerStyle={containerStyle}
@@ -137,11 +155,20 @@ function HomePage() {
               }}
             />
 
+            
+
             {routes.map((dir, i) => (
               <DirectionsRenderer
                 key={i}
                 directions={dir}
-                options={{ suppressMarkers: true }}
+                options={{ 
+                  suppressMarkers: true,
+                  polylineOptions: {
+                  strokeColor: routeColors[i % routeColors.length],   // red
+                  strokeWeight: 5,
+                  strokeOpacity: 0.9,
+                }
+                 }}
               />
             ))}
 
