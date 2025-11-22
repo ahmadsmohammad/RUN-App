@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 19, 2025 at 08:39 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Nov 22, 2025 at 05:05 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -46,22 +46,22 @@ INSERT INTO `Login` (`username`, `password`) VALUES
 --
 
 CREATE TABLE `SavedRoutes` (
-  `username` varchar(30) DEFAULT NULL,
-  `latitude` varchar(30) DEFAULT NULL,
-  `longitude` varchar(30) DEFAULT NULL
+  `id` int(11) DEFAULT NULL,
+  `latitude` decimal(20,15) NOT NULL,
+  `longitude` decimal(20,15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `UserInfo`
+-- Table structure for table `UserAccounts`
 --
 
-CREATE TABLE `UserInfo` (
-  `username` varchar(30) DEFAULT NULL,
-  `FirstName` varchar(30) DEFAULT NULL,
-  `LastName` varchar(30) DEFAULT NULL,
-  `Email` varchar(40) DEFAULT NULL
+CREATE TABLE `UserAccounts` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -78,13 +78,25 @@ ALTER TABLE `Login`
 -- Indexes for table `SavedRoutes`
 --
 ALTER TABLE `SavedRoutes`
-  ADD KEY `username` (`username`);
+  ADD KEY `id` (`id`);
 
 --
--- Indexes for table `UserInfo`
+-- Indexes for table `UserAccounts`
 --
-ALTER TABLE `UserInfo`
-  ADD KEY `username` (`username`);
+ALTER TABLE `UserAccounts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `UserAccounts`
+--
+ALTER TABLE `UserAccounts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -94,13 +106,7 @@ ALTER TABLE `UserInfo`
 -- Constraints for table `SavedRoutes`
 --
 ALTER TABLE `SavedRoutes`
-  ADD CONSTRAINT `savedroutes_ibfk_1` FOREIGN KEY (`username`) REFERENCES `Login` (`username`);
-
---
--- Constraints for table `UserInfo`
---
-ALTER TABLE `UserInfo`
-  ADD CONSTRAINT `userinfo_ibfk_1` FOREIGN KEY (`username`) REFERENCES `Login` (`username`);
+  ADD CONSTRAINT `SavedRoutes_ibfk_1` FOREIGN KEY (`id`) REFERENCES `UserAccounts` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
