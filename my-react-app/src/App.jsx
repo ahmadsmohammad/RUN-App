@@ -9,7 +9,7 @@ import "./App.css";
 import style from "/mapStyles/mapStyle.js";
 
 // Import route generating functions
-import { findPlaces, showAllRoutes, generateCustomRoute } from "./mapFunctions.js";
+import { findPlaces, showAllRoutes } from "./mapFunctions.js";
 
 
 // Define the styling for the map, other css in App.css
