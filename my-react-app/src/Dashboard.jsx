@@ -4,6 +4,7 @@ import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard.jsx";   // <-- make sure this file exists
 import "./App.css";
+import style from "/mapStyles/mapStyle.js";
 
 // Define the styling for the map container div
 // 100% width and height means it fills its parent container
@@ -134,6 +135,7 @@ function App() {
                         center={center}
                         zoom={13}
                         onLoad={handleMapLoad}
+                        options={{ styles: style || [] }}
                     >
                         <Marker
                             position={center}
