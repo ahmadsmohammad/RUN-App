@@ -36,18 +36,19 @@ function HomePage() {
   const [places, setPlaces] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [placeType, setPlaceType] = useState("park");
+  const [milePace, setMilePace] = useState(null);
 
   // API stuff
   const mapRef = useRef(null);
 
   // Route-building preferences. These are in the state that holds values. They are preinitialized for now
-  const [radius, setRadius] = useState(2000);
   const [distance, setDistance] = useState(5000);
-  const [customDistance, setCustomDistance] = useState(null);
-  const [timeGoal, setTimeGoal] = useState(null);
+  const [timeGoal, setTimeGoal] = useState(30);
   const [shape, setShape] = useState("loop");
   const [surface, setSurface] = useState("any");
   const [elevation, setElevation] = useState(0);
+  const [mode, setMode] = useState("distance"); // "distance" or "time"
+
 
   // Navigation variable
   const navigate = useNavigate();
@@ -85,14 +86,27 @@ function HomePage() {
   };
 
   // Show all routes, called after places are found.
-  const handleShowAllRoutes = () => {
+  const handleShowAllRoutes = (results) => {
     showAllRoutes(mapRef, center, results, setRoutes);
   };
 
   // Search for destinations based on the preferences that the user entered/selected.
-  const handleFindPlaces = () => {
-    findPlaces(mapRef, center, radius, placeType, setPlaces, (results));
-  };
+  const handleFindPlaces = (callback) => {
+  findPlaces(
+    mapRef,
+    center,
+    distance,
+    placeType,
+    timeGoal,
+    shape,
+    surface,
+    elevation,
+    milePace,
+    mode,
+    setPlaces,
+    callback
+  );
+};
 
 
     // Login Placeholders
@@ -198,7 +212,17 @@ function HomePage() {
           {/* Button to show routes. This finds places based on the preferences then loads the colored routes */}
           <div className="card">
             <h2>Find places to run </h2>
-            <button onClick={() => { handleFindPlaces(); handleShowAllRoutes(); }}>Show Routes</button>
+            <button
+              onClick={() => {
+                handleFindPlaces((results) => {
+                  setRoutes([]);
+                  // run AFTER places are ready
+                  handleShowAllRoutes(results);
+                });
+              }}
+            >
+              Show Routes
+            </button>
           </div>
 
 
@@ -208,7 +232,7 @@ function HomePage() {
             <h2>Route Preferences</h2>
 
             {/* Places Options */}
-            <label>Type</label>
+            <label>Destination Type</label>
             <select onChange={(e) => setPlaceType(e.target.value)}>
               <option value="park">Parks</option>
               <option value="gym">Gyms</option>
@@ -217,35 +241,61 @@ function HomePage() {
               <option value="restaurant">Restaurants</option>
             </select>
 
-            {/* Distance Target */}
-            <label>Distance Target</label>
-            <select onChange={(e) => setDistance(e.target.value)}>
-              <option value="3000">3 km</option>
-              <option value="5000">5 km</option>
-              <option value="10000">10 km</option>
-              <option value="custom">Custom</option>
+            {/*  Route Mode Select */}
+            <label>Route Mode</label>
+            <select onChange={(e) => setMode(e.target.value)}>
+              <option value="distance">Distance</option>
+              <option value="time">Time</option>
             </select>
 
-            {distance === "custom" && (
-              <input
-                type="number"
-                placeholder="Distance in meters"
-                onChange={(e) => setCustomDistance(Number(e.target.value))}
-              />
+            {/* Distance Mode */}
+            {mode === "distance" && (
+              <>
+                <label>Distance Target</label>
+                <select onChange={(e) => setDistance(Number(e.target.value))}>
+                  <option value="3000">3 km</option>
+                  <option value="5000">5 km</option>
+                  <option value="10000">10 km</option>
+                  <option value="custom">Custom</option>
+                </select>
+
+                {distance === "custom" && (
+                  <input
+                    type="number"
+                    placeholder="Distance in meters"
+                    onChange={(e) => setDistance(Number(e.target.value))}
+                  />
+                )}
+              </>
             )}
 
-            {/* Desired Time */}
-            <label>Time Goal (minutes)</label>
-            <input
-              type="number"
-              placeholder="30"
-              onChange={(e) => setTimeGoal(Number(e.target.value))}
-            />
+            {/* Time Mode */}
+            {mode === "time" && (
+              <>
+                <label>Time Goal (minutes)</label>
+                <input
+                  type="number"
+                  placeholder="Default: 30"
+                  onChange={(e) => setTimeGoal(Number(e.target.value))}
+                />
+
+                {timeGoal && (
+                  <>
+                    <label>Mile Pace (min per mile)</label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 8.5"
+                      onChange={(e) => setMilePace(Number(e.target.value))}
+                    />
+                  </>
+                )}
+              </>
+            )}
 
             {/* Route Shape */}
             <label>Route Shape</label>
             <select onChange={(e) => setShape(e.target.value)}>
-              <option value="loop">Loop</option>
+              <option value="one-way">One-Way</option>
               <option value="out-back">Out & Back</option>
             </select>
 
@@ -259,15 +309,15 @@ function HomePage() {
 
             {/* Elevation Bias */}
             <label>Elevation Profile</label>
-            <input
-              type="range"
-              min="-1"
-              max="3000"
-              step="1"
-              onChange={(e) => setElevation(Number(e.target.value))}
-            />
-            <div className="elevation-labels">
-              <span>Flat</span>
+            <div>
+              <span>Flat  </span>
+              <input
+                type="range"
+                min="-1"
+                max="3000"
+                step="1"
+                onChange={(e) => setElevation(Number(e.target.value))}
+              />
               <span>Hilly</span>
             </div>
           </div>
