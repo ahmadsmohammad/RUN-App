@@ -3,21 +3,26 @@ import { useState, useRef, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard.jsx";
+
+// Import css and google map theme. Theme is stored in that mapStyles folder
 import "./App.css";
 import style from "/mapStyles/mapStyle.js";
+
+// Import route generating functions
 import { findPlaces, showAllRoutes, generateCustomRoute } from "./mapFunctions.js";
 
 
-// Define the styling for the map container div
+// Define the styling for the map, other css in App.css
 const containerStyle = {
   width: "100%",
   height: "100%",
   borderRadius: "12px",
 };
 
+// Keeps places for rendering here so it doesnt reload every time. Could be with the map though.
 const libraries = ["places"];
 
-// Colors array
+// Colors array for routes
 const routeColors = [
   "#FF0000", "#0000FF", "#008000", "#FFA500", "#00FFFF",
   "#00FF00", "#FF00FF", "#000000", "#FFD700", "#40E0D0"
@@ -25,15 +30,17 @@ const routeColors = [
 
 // Main Function
 function HomePage() {
+
   // Initialize variables
   const [center, setCenter] = useState({ lat: 35.85, lng: -86.35 });
   const [places, setPlaces] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [placeType, setPlaceType] = useState("park");
 
+  // API stuff
   const mapRef = useRef(null);
 
-  // Route-building preferences
+  // Route-building preferences. These are in the state that holds values. They are preinitialized for now
   const [radius, setRadius] = useState(2000);
   const [distance, setDistance] = useState(5000);
   const [customDistance, setCustomDistance] = useState(null);
@@ -42,15 +49,16 @@ function HomePage() {
   const [surface, setSurface] = useState("any");
   const [elevation, setElevation] = useState(0);
 
+  // Navigation variable
   const navigate = useNavigate();
 
-  // Go to dashboard
+  // Navigate to dashboard page, i think the dashboard will be to view past routes and other info.
   const goToDashboard = () => {
     navigate("/dashboard");
   };
 
 
-  // Get location on load
+  // Get location on load, this is the intial starting point and may need to be saved in order to store previous routes.
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -68,16 +76,20 @@ function HomePage() {
 
 
 
-  // =================== Route functions, defined in mapFunctions.js ===================
+  // ====== Route functions, defined in mapFunctions.js ===================
+  // These handle finding places and generating the routes. They will use information in the Route Preferences section of the website, which is defined in the rendering section. 
+
+  // Load the map using the api map reference
   const handleMapLoad = (map) => {
     mapRef.current = map;
   };
 
-  // Show all routes
+  // Show all routes, called after places are found.
   const handleShowAllRoutes = () => {
     showAllRoutes(mapRef, center, results, setRoutes);
   };
 
+  // Search for destinations based on the preferences that the user entered/selected.
   const handleFindPlaces = () => {
     findPlaces(mapRef, center, radius, placeType, setPlaces, (results));
   };
@@ -109,9 +121,12 @@ function HomePage() {
 
 
 
-  // ================= UI =======================================
+  // =========== UI =======================================
   return (
+    // Main Container
     <div className="app-container">
+      
+      {/* Left half of main screen for showing the map */}
       <div className="map-container">
         <LoadScript
           googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
@@ -122,7 +137,7 @@ function HomePage() {
             center={center}
             zoom={13}
             onLoad={handleMapLoad}
-            options={{ styles: style || [] }} // safety fallback
+            options={{ styles: style || [] }}
           >
             <Marker
               position={center}
@@ -161,17 +176,26 @@ function HomePage() {
         </LoadScript>
       </div>
 
+
+
+
+
+
+      {/* Right half of main screen for preferences and buttons */}
       <div className="content-container">
         <div className="info-layout">
+
           <h1>RUN App</h1>
           <p>Track your runs and visualize your routes.</p>
 
+          {/* Buttons for login and dashboard */}
           <div className="button-row">
             <button onClick={handleSignIn}>Login</button>
             <button onClick={handleNewUser}>New User?</button>
             <button onClick={goToDashboard}>Dashboard</button>
           </div>
 
+          {/* Button to show routes. This finds places based on the preferences then loads the colored routes */}
           <div className="card">
             <h2>Find places to run </h2>
             <button onClick={() => { handleFindPlaces(); handleShowAllRoutes(); }}>Show Routes</button>
@@ -179,7 +203,7 @@ function HomePage() {
 
 
 
-
+          {/* Prefereneces section */}
           <div className="route-preferences-card">
             <h2>Route Preferences</h2>
 
@@ -246,10 +270,6 @@ function HomePage() {
               <span>Flat</span>
               <span>Hilly</span>
             </div>
-
-            {/* Generate
-            <button onClick={handleGenerateRoute}>Generate Route</button> */}
-
           </div>
         </div>
       </div>
@@ -257,7 +277,8 @@ function HomePage() {
   );
 }
 
-// ---- ROUTES WRAPPER ----
+// === ROUTES WRAPPER ===
+// Im not really sure what this does
 export default function App() {
   return (
     <Routes>

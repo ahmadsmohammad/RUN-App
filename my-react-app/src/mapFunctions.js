@@ -1,4 +1,8 @@
-// ---- Find Places (parks, gyms, etc.) ----
+// I pulled these functions out of the main file becauase they are big and kind of separate from everything else
+  
+
+// === Find Places (parks, gyms, etc.) ===
+// Using preferences from the arguments, finds places that fit criteria. This will be farily large as i deal with elevation and stuff
 export function findPlaces(mapRef, center, radius, placeType, setPlaces, callback) {
   if (!mapRef.current) return;
 
@@ -22,7 +26,8 @@ export function findPlaces(mapRef, center, radius, placeType, setPlaces, callbac
 
 
 
-// ---- Show All Routes (walking directions) ----
+// === Show All Routes ===========
+// Generates the routes from the list of places. This shouldnt change much since finding the places is the hard part.
 export function showAllRoutes(mapRef, center, places, setRoutes) {
   if (!center || places.length === 0) return;
 
@@ -57,20 +62,3 @@ export function showAllRoutes(mapRef, center, places, setRoutes) {
   fetchRoute(0);
 }
 
-
-
-
-// ---- Generate Route (temporary placeholder) ----
-export function generateCustomRoute(distance, customDistance, timeGoal, shape, surface, elevation) {
-  const prefs = {
-    distance: distance === "custom" ? customDistance : distance,
-    timeGoal,
-    shape,
-    surface,
-    elevation,
-  };
-
-  console.log("Generating route with preferences:", prefs);
-
-  return prefs; // returning in case you need it later
-}
