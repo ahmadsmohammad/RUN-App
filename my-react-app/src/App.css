@@ -79,6 +79,16 @@ h1 {
 
 }
 
+.route-preferences-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;  /* <-- KEY FIX */
+  padding: 12px;
+  border-radius: 8px;
+
+}
+
 button {
   padding: 10px 20px;
   font-size: 1rem;

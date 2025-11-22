@@ -2,8 +2,11 @@
 import { useState, useRef, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import Dashboard from "./Dashboard.jsx";   // <-- make sure this file exists
+import Dashboard from "./Dashboard.jsx";
 import "./App.css";
+import style from "/mapStyles/mapStyle.js";
+import { findPlaces, showAllRoutes, generateCustomRoute } from "./mapFunctions.js";
+
 
 // Define the styling for the map container div
 const containerStyle = {
@@ -13,32 +16,39 @@ const containerStyle = {
 };
 
 const libraries = ["places"];
+
+// Colors array
 const routeColors = [
-  "#FF0000", // Red
-  "#0000FF", // Blue
-  "#008000", // Green
-  "#FFA500", // Orange
-  "#00FFFF", // Cyan
-  "#00FF00", // Lime
-  "#FF00FF", // Magenta
-  "#000000", // Black
-  "#FFD700", // Gold
-  "#40E0D0"  // Turquoise
+  "#FF0000", "#0000FF", "#008000", "#FFA500", "#00FFFF",
+  "#00FF00", "#FF00FF", "#000000", "#FFD700", "#40E0D0"
 ];
 
+// Main Function
 function HomePage() {
+  // Initialize variables
   const [center, setCenter] = useState({ lat: 35.85, lng: -86.35 });
   const [places, setPlaces] = useState([]);
   const [routes, setRoutes] = useState([]);
-  const mapRef = useRef(null);
-  const [radius, setRadius] = useState(2000);
+  const [placeType, setPlaceType] = useState("park");
 
-  const navigate = useNavigate(); // <-- routing hook
+  const mapRef = useRef(null);
+
+  // Route-building preferences
+  const [radius, setRadius] = useState(2000);
+  const [distance, setDistance] = useState(5000);
+  const [customDistance, setCustomDistance] = useState(null);
+  const [timeGoal, setTimeGoal] = useState(null);
+  const [shape, setShape] = useState("loop");
+  const [surface, setSurface] = useState("any");
+  const [elevation, setElevation] = useState(0);
+
+  const navigate = useNavigate();
 
   // Go to dashboard
   const goToDashboard = () => {
     navigate("/dashboard");
   };
+
 
   // Get location on load
   useEffect(() => {
@@ -55,71 +65,25 @@ function HomePage() {
     }
   }, []);
 
+
+
+
+  // =================== Route functions, defined in mapFunctions.js ===================
   const handleMapLoad = (map) => {
     mapRef.current = map;
   };
 
   // Show all routes
   const handleShowAllRoutes = () => {
-    if (!center || places.length === 0) return;
-
-    const service = new window.google.maps.DirectionsService();
-    const newRoutes = [];
-
-    const fetchRoute = (index) => {
-      if (index >= places.length) {
-        setRoutes(newRoutes);
-        return;
-      }
-
-      const destination = {
-        lat: places[index].geometry.location.lat(),
-        lng: places[index].geometry.location.lng(),
-      };
-
-      console.log("destination: ", destination.lat, destination.lng)
-      console.log("type: ", typeof destination.lat)
-
-
-      service.route(
-        {
-          origin: center,
-          destination,
-          travelMode: window.google.maps.TravelMode.WALKING,
-        },
-        (result, status) => {
-          if (status === "OK") newRoutes.push(result);
-
-          setTimeout(() => fetchRoute(index + 1), 200);
-        }
-      );
-    };
-
-    fetchRoute(0);
+    showAllRoutes(mapRef, center, results, setRoutes);
   };
 
-  // Find parks
-  const handleFindParks = () => {
-    if (!mapRef.current) return;
-
-    const request = {
-      location: center,
-      radius: radius,
-      type: "park",
-    };
-
-    const service = new window.google.maps.places.PlacesService(
-      mapRef.current
-    );
-
-    service.nearbySearch(request, (results, status) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        setPlaces(results.slice(0, 10));
-      }
-    });
+  const handleFindPlaces = () => {
+    findPlaces(mapRef, center, radius, placeType, setPlaces, (results));
   };
 
-  // Fake login
+
+    // Login Placeholders
   const handleSignIn = () => {
     const user = prompt("Enter your username:");
     const pass = prompt("Enter your password:");
@@ -132,7 +96,20 @@ function HomePage() {
     console.log("New User:", user, pass);
   };
 
-  // UI
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // ================= UI =======================================
   return (
     <div className="app-container">
       <div className="map-container">
@@ -145,6 +122,7 @@ function HomePage() {
             center={center}
             zoom={13}
             onLoad={handleMapLoad}
+            options={{ styles: style || [] }} // safety fallback
           >
             <Marker
               position={center}
@@ -155,20 +133,18 @@ function HomePage() {
               }}
             />
 
-            
-
             {routes.map((dir, i) => (
               <DirectionsRenderer
                 key={i}
                 directions={dir}
-                options={{ 
+                options={{
                   suppressMarkers: true,
                   polylineOptions: {
-                  strokeColor: routeColors[i % routeColors.length],   // red
-                  strokeWeight: 5,
-                  strokeOpacity: 0.9,
-                }
-                 }}
+                    strokeColor: routeColors[i % routeColors.length],
+                    strokeWeight: 5,
+                    strokeOpacity: 0.9,
+                  },
+                }}
               />
             ))}
 
@@ -193,19 +169,87 @@ function HomePage() {
           <div className="button-row">
             <button onClick={handleSignIn}>Login</button>
             <button onClick={handleNewUser}>New User?</button>
-            <button onClick={goToDashboard}>Dashboard</button> {/* <-- NEW BUTTON */}
+            <button onClick={goToDashboard}>Dashboard</button>
           </div>
 
           <div className="card">
-            <button onClick={handleFindParks}>Find Parks</button>
-            <p>Within</p>
-            <select onChange={(e) => setRadius(Number(e.target.value))}>
-              <option value="1609.34">1 Mile</option>
-              <option value="3218.69">2 Miles</option>
-              <option value="8046.72">5 Miles</option>
-              <option value="16093.4">10 Miles</option>
+            <h2>Find places to run </h2>
+            <button onClick={() => { handleFindPlaces(); handleShowAllRoutes(); }}>Show Routes</button>
+          </div>
+
+
+
+
+          <div className="route-preferences-card">
+            <h2>Route Preferences</h2>
+
+            {/* Places Options */}
+            <label>Type</label>
+            <select onChange={(e) => setPlaceType(e.target.value)}>
+              <option value="park">Parks</option>
+              <option value="gym">Gyms</option>
+              <option value="tourist_attraction">Attractions</option>
+              <option value="cafe">Cafes</option>
+              <option value="restaurant">Restaurants</option>
             </select>
-            <button onClick={handleShowAllRoutes}>Show Routes</button>
+
+            {/* Distance Target */}
+            <label>Distance Target</label>
+            <select onChange={(e) => setDistance(e.target.value)}>
+              <option value="3000">3 km</option>
+              <option value="5000">5 km</option>
+              <option value="10000">10 km</option>
+              <option value="custom">Custom</option>
+            </select>
+
+            {distance === "custom" && (
+              <input
+                type="number"
+                placeholder="Distance in meters"
+                onChange={(e) => setCustomDistance(Number(e.target.value))}
+              />
+            )}
+
+            {/* Desired Time */}
+            <label>Time Goal (minutes)</label>
+            <input
+              type="number"
+              placeholder="30"
+              onChange={(e) => setTimeGoal(Number(e.target.value))}
+            />
+
+            {/* Route Shape */}
+            <label>Route Shape</label>
+            <select onChange={(e) => setShape(e.target.value)}>
+              <option value="loop">Loop</option>
+              <option value="out-back">Out & Back</option>
+            </select>
+
+            {/* Surface Preference */}
+            <label>Surface Preference</label>
+            <select onChange={(e) => setSurface(e.target.value)}>
+              <option value="any">Any</option>
+              <option value="road">Road</option>
+              <option value="trail">Trail</option>
+            </select>
+
+            {/* Elevation Bias */}
+            <label>Elevation Profile</label>
+            <input
+              type="range"
+              min="-1"
+              max="3000"
+              step="1"
+              onChange={(e) => setElevation(Number(e.target.value))}
+            />
+            <div className="elevation-labels">
+              <span>Flat</span>
+              <span>Hilly</span>
+            </div>
+
+            {/* Generate
+            <button onClick={handleGenerateRoute}>Generate Route</button> */}
+
           </div>
         </div>
       </div>
