@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
     try{
         // Query the database to check for an exisitng account.
         const [existing] = await db.query(
-            "SELECT id FROM users WHERE email = ? OR username = ?",
+            "SELECT id FROM UserAccounts WHERE email = ? OR username = ?",
             [email, username]
         );
 
