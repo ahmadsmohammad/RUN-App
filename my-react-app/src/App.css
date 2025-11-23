@@ -150,18 +150,21 @@ button:hover {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* Form styling */
 .modal form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Label styling */
 .modal label {
   font-weight: bold;
   font-size: 0.9rem;
   margin-bottom: 2px;
 }
 
+/* Input styling */
 .modal input {
   padding: 10px;
   font-size: 1rem;
@@ -175,6 +178,7 @@ button:hover {
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
 }
 
+/* Button Styling */
 .modal button[type="submit"] {
   margin-top: 10px;
   padding: 10px;
@@ -187,15 +191,18 @@ button:hover {
   transition: 0.2s;
 }
 
+/* Hover styling */
 .modal button[type="submit"]:hover {
   background: #005fcc;
 }
 
+/* Text alignment */
 .modal h2 {
   text-align: center;
   margin-bottom: 10px;
 }
 
+/* Close button styling */
 .close-btn {
   margin-top: 8px;
   padding: 8px;
@@ -206,23 +213,14 @@ button:hover {
   cursor: pointer;
 }
 
+/* Close button hovering */
 .close-btn:hover {
   background: #cacaca;
 }
 
+/* Message styling */
 .modal p {
   font-size: 0.9rem;
   margin-top: 8px;
   text-align: center;
-}
-
-/* Optional colors */
-.success {
-  color: #0a8a26;
-  font-weight: bold;
-}
-
-.error {
-  color: #c40000;
-  font-weight: bold;
 }
