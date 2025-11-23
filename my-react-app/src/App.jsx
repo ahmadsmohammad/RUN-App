@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard.jsx";
+import Register from "./Register.jsx"
 
 // Import css and google map theme. Theme is stored in that mapStyles folder
 import "./App.css";
@@ -48,6 +49,9 @@ function HomePage() {
   const [surface, setSurface] = useState("any");
   const [elevation, setElevation] = useState(0);
   const [mode, setMode] = useState("distance"); // "distance" or "time"
+
+  // Create Login/Registration modal states
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
 
   // Navigation variable
@@ -105,8 +109,8 @@ function HomePage() {
     mode,
     setPlaces,
     callback
-  );
-};
+    );
+  };
 
 
     // Login Placeholders
@@ -122,16 +126,14 @@ function HomePage() {
     console.log("New User:", user, pass);
   };
 
+  //Registration Modal USe State Setters
+  const openRegisterModal = () => {
+    setShowRegisterModal(true);
+  };
 
-
-
-
-
-
-
-
-
-
+  const closeRegisterModal = () => {
+    setShowRegisterModal(false);
+  };
 
 
 
@@ -205,7 +207,7 @@ function HomePage() {
           {/* Buttons for login and dashboard */}
           <div className="button-row">
             <button onClick={handleSignIn}>Login</button>
-            <button onClick={handleNewUser}>New User?</button>
+            <button onClick={openRegisterModal}>Register</button>
             <button onClick={goToDashboard}>Dashboard</button>
           </div>
 
@@ -323,6 +325,17 @@ function HomePage() {
           </div>
         </div>
       </div>
+      {/* Register Modal (Registration Window) */}
+      {showRegisterModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <Register />
+            <button className="close-btn" onClick={closeRegisterModal}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
