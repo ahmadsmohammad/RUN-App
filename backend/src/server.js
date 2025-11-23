@@ -2,7 +2,7 @@
 
 // Get all necessary packages, as well as the environment.
 // .env is included in this!! It will be needed!
-require('dotenv').config()
+require('dotenv').config({ path: "../.env" })
 const express = require('express')
 const cors = require('cors')
 const authRoutes = require('./routes/auth') // This is our registration API endpoint
