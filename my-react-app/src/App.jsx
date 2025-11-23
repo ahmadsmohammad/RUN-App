@@ -4,6 +4,7 @@ import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard.jsx";
 import Register from "./Register.jsx"
+import Login from "./Login.jsx"
 
 // Import css and google map theme. Theme is stored in that mapStyles folder
 import "./App.css";
@@ -51,6 +52,7 @@ function HomePage() {
   const [mode, setMode] = useState("distance"); // "distance" or "time"
 
   // Create Login/Registration modal states
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
 
@@ -124,6 +126,15 @@ function HomePage() {
     const user = prompt("Enter a username:");
     const pass = prompt("Enter a password:");
     console.log("New User:", user, pass);
+  };
+
+  //Login Modal USe State Setters
+  const openLoginModal = () => {
+    setShowLoginModal(true);
+  };
+
+  const closeLoginModal = () => {
+    setShowLoginModal(false);
   };
 
   //Registration Modal USe State Setters
@@ -206,7 +217,7 @@ function HomePage() {
 
           {/* Buttons for login and dashboard */}
           <div className="button-row">
-            <button onClick={handleSignIn}>Login</button>
+            <button onClick={openLoginModal}>Login</button>
             <button onClick={openRegisterModal}>Register</button>
             <button onClick={goToDashboard}>Dashboard</button>
           </div>
@@ -327,13 +338,25 @@ function HomePage() {
       </div>
       {/* Register Modal (Registration Window) */}
       {showRegisterModal && (
-        <div className="modal-overlay">
-          <div className="modal">
+        <div className="modal-overlay" onClick={closeRegisterModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <Register />
             <button className="close-btn" onClick={closeRegisterModal}>
               Close
             </button>
           </div>
+        </div>
+      )}
+      {/* Login Modal (Login Window) */}
+      {showLoginModal && (
+        <div className="modal-overlay" onClick={closeLoginModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <Login onClose={closeLoginModal}/>
+              <button className="close-btn" onClick={closeLoginModal}>
+                Close
+              </button>
+          </div>
+
         </div>
       )}
     </div>
