@@ -18,5 +18,5 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 
 // Use port in .env or 5000 by default and listen on this port.
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
