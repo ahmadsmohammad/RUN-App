@@ -1,14 +1,19 @@
+// Import React useStates
 import { useState } from "react";
 
+// Create the registration modal.
 export default function Register() {
+    // Create the form and its setter.
     const [form, setForm] = useState({
         username: "",
         email: "",
         password: ""
     });
 
+    // Registration status message useState.
     const [message, setMessage] = useState("");
 
+    // Event handler for change in fields filled out.
     const handleChange = (e) => {
         setForm({
             ...form,
@@ -16,7 +21,9 @@ export default function Register() {
         });
     };
 
+    // Event handler for when the form is submitted.
     const handleSubmit = async (e) => {
+        // Prevent the page from reloading
         e.preventDefault();
 
         // Regex Email Check
@@ -26,7 +33,7 @@ export default function Register() {
             return;
         }
 
-        // Send to Express server
+        // Send to Express server as a POST request.
         try{
             const res = await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
@@ -34,13 +41,15 @@ export default function Register() {
                 body: JSON.stringify(form)
             });
 
+            // Send registration status details (Success, repeat registration, etc.)
             const data = await res.json();
             setMessage(data.message);
-        } catch {
+        } catch { // Catches an error (usually when the backend is offline).
             setMessage("Oops! That's embarassing... Something went wrong in the backend.");
         }
     };
 
+    // Creates the Form to register.
     return(
         <form onSubmit={handleSubmit}>
             <h2>Create Account</h2>
