@@ -26,8 +26,16 @@ const libraries = ["places"];
 
 // Colors array for routes
 const routeColors = [
-  "#FF0000", "#0000FF", "#008000", "#FFA500", "#00FFFF",
-  "#00FF00", "#FF00FF", "#000000", "#FFD700", "#40E0D0"
+  "#E6194B", // Red
+  "#02500cff", // Green
+  "#00c811ff", // Blue
+  "#F58231", // Orange
+  "#911EB4", // Purple
+  "#1100ffff", // Cyan
+  "#F032E6", // Magenta
+  "#000000ff", // Black
+  "#852323ff", // Maroon
+  "#cfcf00ff"  // Gold
 ];
 
 // Main Function
@@ -95,6 +103,8 @@ function HomePage() {
   const handleShowAllRoutes = (results) => {
     showAllRoutes(mapRef, center, results, setRoutes);
   };
+
+
 
   // Search for destinations based on the preferences that the user entered/selected.
   const handleFindPlaces = (callback) => {
@@ -164,7 +174,10 @@ function HomePage() {
             center={center}
             zoom={13}
             onLoad={handleMapLoad}
-            options={{ styles: style || [] }}
+            options={{ 
+              styles: style || [],
+              disableDefaultUI: true,   // removes ALL controls
+            }}
           >
             <Marker
               position={center}
@@ -175,7 +188,7 @@ function HomePage() {
               }}
             />
 
-            {routes.map((dir, i) => (
+            {/* {routes.map((dir, i) => (
               <DirectionsRenderer
                 key={i}
                 directions={dir}
@@ -185,6 +198,21 @@ function HomePage() {
                     strokeColor: routeColors[i % routeColors.length],
                     strokeWeight: 5,
                     strokeOpacity: 0.9,
+                  },
+                }}
+              />
+            ))} */}
+
+            {routes.map((route, i) => (
+              <DirectionsRenderer
+                key={i}
+                directions={route.directions}
+                options={{
+                  suppressMarkers: true,
+                  polylineOptions: {
+                    strokeColor: routeColors[i % routeColors.length],
+                    strokeWeight: 5,
+                    strokeOpacity: 0.9
                   },
                 }}
               />
@@ -210,6 +238,14 @@ function HomePage() {
 
       {/* Right half of main screen for preferences and buttons */}
       <div className="content-container">
+
+        {/* Logo in top-right */}
+        <img 
+          src="../public/logo.png" 
+          alt="RUN App Logo" 
+          className="top-right-logo"
+        />
+
         <div className="info-layout">
 
           <h1>RUN App</h1>
@@ -239,101 +275,125 @@ function HomePage() {
           </div>
 
 
+          <div className="preferences-and-list">
+            {/* Prefereneces section */}
+            <div className="route-preferences-card">
+              <h2>Route Preferences</h2>
 
-          {/* Prefereneces section */}
-          <div className="route-preferences-card">
-            <h2>Route Preferences</h2>
+              {/* Places Options */}
+              <label>Destination Type</label>
+              <select onChange={(e) => setPlaceType(e.target.value)}>
+                <option value="park">Parks</option>
+                <option value="gym">Gyms</option>
+                <option value="tourist_attraction">Attractions</option>
+                <option value="cafe">Cafes</option>
+                <option value="restaurant">Restaurants</option>
+              </select>
 
-            {/* Places Options */}
-            <label>Destination Type</label>
-            <select onChange={(e) => setPlaceType(e.target.value)}>
-              <option value="park">Parks</option>
-              <option value="gym">Gyms</option>
-              <option value="tourist_attraction">Attractions</option>
-              <option value="cafe">Cafes</option>
-              <option value="restaurant">Restaurants</option>
-            </select>
+              {/*  Route Mode Select */}
+              <label>Route Mode</label>
+              <select onChange={(e) => setMode(e.target.value)}>
+                <option value="distance">Distance</option>
+                <option value="time">Time</option>
+              </select>
 
-            {/*  Route Mode Select */}
-            <label>Route Mode</label>
-            <select onChange={(e) => setMode(e.target.value)}>
-              <option value="distance">Distance</option>
-              <option value="time">Time</option>
-            </select>
+              {/* Distance Mode */}
+              {mode === "distance" && (
+                <>
+                  <label>Distance Target</label>
+                  <select onChange={(e) => setDistance(Number(e.target.value))}>
+                    <option value="3000">3 km</option>
+                    <option value="5000">5 km</option>
+                    <option value="10000">10 km</option>
+                    <option value="custom">Custom</option>
+                  </select>
 
-            {/* Distance Mode */}
-            {mode === "distance" && (
-              <>
-                <label>Distance Target</label>
-                <select onChange={(e) => setDistance(Number(e.target.value))}>
-                  <option value="3000">3 km</option>
-                  <option value="5000">5 km</option>
-                  <option value="10000">10 km</option>
-                  <option value="custom">Custom</option>
-                </select>
-
-                {distance === "custom" && (
-                  <input
-                    type="number"
-                    placeholder="Distance in meters"
-                    onChange={(e) => setDistance(Number(e.target.value))}
-                  />
-                )}
-              </>
-            )}
-
-            {/* Time Mode */}
-            {mode === "time" && (
-              <>
-                <label>Time Goal (minutes)</label>
-                <input
-                  type="number"
-                  placeholder="Default: 30"
-                  onChange={(e) => setTimeGoal(Number(e.target.value))}
-                />
-
-                {timeGoal && (
-                  <>
-                    <label>Mile Pace (min per mile)</label>
+                  {distance === "custom" && (
                     <input
                       type="number"
-                      placeholder="e.g. 8.5"
-                      onChange={(e) => setMilePace(Number(e.target.value))}
+                      placeholder="Distance in meters"
+                      onChange={(e) => setDistance(Number(e.target.value))}
                     />
-                  </>
-                )}
-              </>
+                  )}
+                </>
+              )}
+
+              {/* Time Mode */}
+              {mode === "time" && (
+                <>
+                  <label>Time Goal (minutes)</label>
+                  <input
+                    type="number"
+                    placeholder="Default: 30"
+                    onChange={(e) => setTimeGoal(Number(e.target.value))}
+                  />
+
+                  {timeGoal && (
+                    <>
+                      <label>Mile Pace (min per mile)</label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 8.5"
+                        onChange={(e) => setMilePace(Number(e.target.value))}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* Route Shape */}
+              <label>Route Shape</label>
+              <select onChange={(e) => setShape(e.target.value)}>
+                <option value="one-way">One-Way</option>
+                <option value="out-back">Out & Back</option>
+              </select>
+
+              {/* Surface Preference */}
+              <label>Surface Preference</label>
+              <select onChange={(e) => setSurface(e.target.value)}>
+                <option value="any">Any</option>
+                <option value="road">Road</option>
+                <option value="trail">Trail</option>
+              </select>
+
+              {/* Elevation Bias */}
+              <label>Elevation Profile</label>
+              <div>
+                <span>Flat  </span>
+                <input
+                  type="range"
+                  min="-1"
+                  max="3000"
+                  step="1"
+                  onChange={(e) => setElevation(Number(e.target.value))}
+                />
+                <span>Hilly</span>
+              </div>
+            </div>
+
+            {routes.length > 0 && (
+              <div className="route-summary">
+                <h2>Your Routes</h2>
+
+                {routes.map((route, i) => (
+                  <div key={i} className="route-item">
+                    <div className="route-color" 
+                      style={{ backgroundColor: routeColors[i % routeColors.length] }}
+                    />
+
+                    <div className="route-text">
+                      <p className="route-name">{route.name}</p>
+                      <p className="route-distance">
+                        {(route.distance / 1000).toFixed(2)} km
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
 
-            {/* Route Shape */}
-            <label>Route Shape</label>
-            <select onChange={(e) => setShape(e.target.value)}>
-              <option value="one-way">One-Way</option>
-              <option value="out-back">Out & Back</option>
-            </select>
-
-            {/* Surface Preference */}
-            <label>Surface Preference</label>
-            <select onChange={(e) => setSurface(e.target.value)}>
-              <option value="any">Any</option>
-              <option value="road">Road</option>
-              <option value="trail">Trail</option>
-            </select>
-
-            {/* Elevation Bias */}
-            <label>Elevation Profile</label>
-            <div>
-              <span>Flat  </span>
-              <input
-                type="range"
-                min="-1"
-                max="3000"
-                step="1"
-                onChange={(e) => setElevation(Number(e.target.value))}
-              />
-              <span>Hilly</span>
-            </div>
           </div>
+
         </div>
       </div>
       {/* Register Modal (Registration Window) */}

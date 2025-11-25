@@ -6,6 +6,42 @@ html, body {
   height: 100%;
 }
 
+* {
+  font-family: "Manrope", sans-serif;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 10px 14px;
+  width: 180px;
+  height: 45px;
+  font-size: 1rem;
+
+  background: #ffffff;
+  color: #222;
+
+  border: 2px solid #cdd2e0;
+  border-radius: 10px;
+
+  outline: none;
+  transition: 0.15s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: #4c8bff;
+  box-shadow: 0 0 6px rgba(76, 139, 255, 0.4);
+}
+
+label, p {
+  font-size: 20px;
+}
+
+span {
+  font-size: 20px;
+}
+
 /* Layout: split screen */
 .app-container {
   display: flex;
@@ -17,7 +53,7 @@ html, body {
 
 /* Left side: map */
 .map-container {
-  flex: 1.5; /* slightly larger portion for map */
+  flex: 1.25; /* slightly larger portion for map */
   margin: 20px;
   border: 4px solid rgb(43, 43, 43);
   border-radius: 12px;
@@ -84,6 +120,17 @@ h1 {
 
 }
 
+
+.top-right-logo {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: 180px;      /* adjust size */
+  height: auto;
+  z-index: 1000;
+  pointer-events: none; /* so clicks go through */
+}
+
 /* Show routes button area */
 .card {
   margin-top: 20px;
@@ -93,21 +140,11 @@ h1 {
 
 }
 
-/* List of preferences */
-.route-preferences-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;  /* <-- KEY FIX */
-  padding: 12px;
-  border-radius: 8px;
-
-}
-
 /* All buttons */
 button {
   padding: 10px 20px;
   font-size: 1rem;
+  font-family: "Manrope", sans-serif;
   border-radius: 8px;
   background-color: #0077ff;
   color: white;
@@ -202,6 +239,10 @@ button:hover {
   margin-bottom: 10px;
 }
 
+h2 {
+  margin: 5px;
+}
+
 /* Close button styling */
 .close-btn {
   margin-top: 8px;
@@ -223,4 +264,78 @@ button:hover {
   font-size: 0.9rem;
   margin-top: 8px;
   text-align: center;
+}
+
+.preferences-and-list {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  margin-top: 20px;
+}
+
+/* List of preferences */
+.route-preferences-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 0px;
+  border-radius: 8px;
+  margin-top: 10px;
+  margin-bottom: 75px;
+  margin-right: 10px;
+  background: rgba(255,255,255,0.12);
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 2px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+
+}
+
+
+/* ===== List ========= */
+.route-summary {
+  flex: 1.5;
+  overflow-y: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+  background: rgba(255,255,255,0.12);
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 2px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.route-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 5px;
+}
+
+.route-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.route-text p {
+  margin: 0;
+  color: white;
+}
+
+.route-name {
+  font-weight: 600;
+}
+
+.route-distance {
+  font-size: 0.9rem;
+  opacity: 0.8;
 }

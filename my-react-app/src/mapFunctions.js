@@ -88,7 +88,14 @@ export function showAllRoutes(mapRef, center, places, setRoutes) {
         travelMode: window.google.maps.TravelMode.WALKING,
       },
       (result, status) => {
-        if (status === "OK") newRoutes.push(result);
+        if (status === "OK") {
+          // newRoutes.push(result);
+          newRoutes.push({
+            directions: result,
+            distance: result.routes[0].legs[0].distance.value, // meters
+            name: places[index].name
+          });
+        }
 
         setTimeout(() => fetchRoute(index + 1), 200);
       }
