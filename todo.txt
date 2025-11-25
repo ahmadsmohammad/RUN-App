@@ -1,0 +1,7 @@
+-Loading icon
+-Dashboard updates (bring homepage to dashboard)
+-Add option to save routes (both dashboard and guest homepage)
+	- Homepage save prompts user to login rather than actually saving
+-Lock dashboard unless logged in (Remove button from homepage)
+-Offer to save a route for user if guest
+-Update database schema to have route names and distance
