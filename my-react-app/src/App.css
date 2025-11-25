@@ -36,6 +36,7 @@ select:focus {
 
 label, p {
   font-size: 20px;
+  color: #ffffff;
 }
 
 span {
@@ -105,6 +106,7 @@ span {
   background-color: #3c89fc;
   display: flex;
   flex-direction: column;
+  padding-left: 10px;
 }
 
 /* Margin fix in main screen right side */
@@ -114,10 +116,10 @@ span {
 }
 
 /* Headers */
-h1 {
+h1, h2 {
   font-size: 2rem;
   margin-bottom: 10px;
-
+  color: white;
 }
 
 

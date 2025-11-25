@@ -6,6 +6,9 @@ import Dashboard from "./Dashboard.jsx";   // <-- make sure this file exists
 import "./App.css";
 import style from "/mapStyles/mapStyle.js";
 
+// Route Functions
+import { showRouteDashboard, findPlaces } from "./mapFunctions.js";
+
 // Define the styling for the map container div
 // 100% width and height means it fills its parent container
 // Rounded corners make it look cleaner
@@ -21,6 +24,8 @@ function App() {
     const [routes, setRoutes] = useState([]);
     const mapRef = useRef(null);
     const [radius, setRadius] = useState(2000);
+    const [selectedRouteIndex, setSelectedRouteIndex] = useState(null);
+
 
     const navigate = useNavigate(); // <-- routing hook
 
@@ -44,65 +49,54 @@ function App() {
         }
     }, []);
 
+
+    // Load the list of routes immediately
+    useEffect(() => {
+        if (!mapRef.current) return;   // WAIT for map to load
+
+        findPlaces(
+            mapRef,
+            center,
+            5000,
+            "park",
+            30,
+            "one-way",
+            "any",
+            -1,
+            30,
+            "distance",
+            setPlaces,
+            (newPlaces) => {
+                handleShowAllRoutes(newPlaces);
+            }
+        );
+    }, [mapRef.current]);
+
+
+    // Load the map, called in rendering section
     const handleMapLoad = (map) => {
         mapRef.current = map;
     };
 
+
     // Show all routes
-    const handleShowAllRoutes = () => {
-        if (!center || places.length === 0) return;
-
-        const service = new window.google.maps.DirectionsService();
-        const newRoutes = [];
-
-        const fetchRoute = (index) => {
-            if (index >= places.length) {
-                setRoutes(newRoutes);
-                return;
-            }
-
-            const destination = {
-                lat: places[index].geometry.location.lat(),
-                lng: places[index].geometry.location.lng(),
-            };
-
-            service.route(
-                {
-                    origin: center,
-                    destination,
-                    travelMode: window.google.maps.TravelMode.WALKING,
-                },
-                (result, status) => {
-                    if (status === "OK") newRoutes.push(result);
-
-                    setTimeout(() => fetchRoute(index + 1), 200);
-                }
-            );
-        };
-
-        fetchRoute(0);
+    // 'places' needs to be made from queries rather than a place finding function.
+    const handleShowAllRoutes = (places) => {
+        showRouteDashboard(mapRef, center, places, setRoutes, setSelectedRouteIndex);
     };
 
-    // Find parks
-    const handleFindParks = () => {
-        if (!mapRef.current) return;
 
-        const request = {
-            location: center,
-            radius: radius,
-            type: "park",
-        };
+    // We need a function that will build a list of places based on whats stored in the database. Should pass setPlaces as an argument
+    // ...
 
-        const service = new window.google.maps.places.PlacesService(
-            mapRef.current
-        );
+    // 
 
-        service.nearbySearch(request, (results, status) => {
-            if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-                setPlaces(results.slice(0, 7));
-            }
-        });
-    };
+
+
+
+
+
+
 
     // Fake login
     const handleSignIn = () => {
@@ -116,6 +110,27 @@ function App() {
         const pass = prompt("Enter a password:");
         console.log("New User:", user, pass);
     };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // Rendering
@@ -135,7 +150,10 @@ function App() {
                         center={center}
                         zoom={13}
                         onLoad={handleMapLoad}
-                        options={{ styles: style || [] }}
+                        options={{ 
+                            styles: style || [],
+                            disableDefaultUI: true,   // removes ALL controls
+                        }}
                     >
                         <Marker
                             position={center}
@@ -146,37 +164,52 @@ function App() {
                             }}
                         />
 
-                        {routes.map((dir, i) => (
-                            <DirectionsRenderer
-                                key={i}
-                                directions={dir}
-                                options={{ suppressMarkers: true }}
-                            />
-                        ))}
+                        {selectedRouteIndex !== null && (
+                        <DirectionsRenderer
+                            directions={routes[selectedRouteIndex].directions}
+                        />
+                        )}
 
-                        {places.map((place) => (
-                            <Marker
-                                key={place.place_id}
-                                position={{
-                                    lat: place.geometry.location.lat(),
-                                    lng: place.geometry.location.lng(),
-                                }}
-                            />
-                        ))}
+         
                     </GoogleMap>
                 </LoadScript>
             </div>
 
-            <div className="dashboard-middle-container">
-                <div className="info-layout">
-                    <h1>Your Stats!</h1>
+            {/* --------------- CENTER ---------------- */}
 
-                    <h2>Previous runs:</h2>
-                    <li>blah</li>
-                    <li>blah</li>
-                    <li>blah</li>
-                    <li>blah</li>
+            <div className="dashboard-middle-container">
+                <h1>Previous Run Locations</h1>
+                <p>Click one to see the way there</p>
+
+
+               {routes.length > 0 && (
+                <div className="route-summary">
+                    <h2>Your Routes</h2>
+
+                    {routes.map((route, i) => (
+                    <div 
+                        key={i}
+                        className="route-item"
+                        onClick={() => setSelectedRouteIndex(i)}   // <-- CLICK SELECTS
+                        style={{
+                        cursor: "pointer",
+                        background: selectedRouteIndex === i ? "rgba(0, 39, 146, 0.2)" : "transparent",
+                        padding: "10px",
+                        borderRadius: "6px",
+                        }}
+                    >
+                        <div className="route-text">
+                        <p className="route-name">{route.name}</p>
+                        <p className="route-distance">
+                            {(route.distance / 1000).toFixed(2)} km
+                        </p>
+                        </div>
+                    </div>
+                    ))}
                 </div>
+                )}
+
+
             </div>
 
             {/* RIGHT SIDE: Info panel and button
