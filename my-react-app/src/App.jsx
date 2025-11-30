@@ -83,7 +83,7 @@ function HomePage() {
 
     const validate = async () => {
       try{
-        const res = await fetch(`http://localhost:8080/api/auth/validate/${userId}`)
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/validate/${userId}`)
         const data = await res.json()
 
         if(!data.valid){
@@ -160,7 +160,7 @@ function HomePage() {
     };
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/save", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

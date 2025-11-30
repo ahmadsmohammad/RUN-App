@@ -35,7 +35,7 @@ function Dashboard() {
 
         const validate = async () => {
             try{
-                const res = await fetch(`http://localhost:8080/api/auth/validate/${userId}`)
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/validate/${userId}`)
                 const data = await res.json()
 
                 if(!data.valid){
@@ -90,7 +90,7 @@ function Dashboard() {
 
             const fetchSavedRoutes = async () => {
                     try {
-                        const res = await fetch(`http://localhost:8080/api/auth/routes/${userId}`);
+                        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/routes/${userId}`);
                         const data = await res.json();
                         
                         // Convert DB rows into Google Places-style objects
