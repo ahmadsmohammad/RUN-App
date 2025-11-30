@@ -1,13 +1,13 @@
 // Import React hooks
 import { useState, useRef, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import Dashboard from "./Dashboard.jsx";   // <-- make sure this file exists
+// import { Routes, Route, useNavigate } from "react-router-dom"; All unused
 import "./App.css";
 import style from "/mapStyles/mapStyle.js";
 
 // Route Functions
-import { showRouteDashboard, findPlaces } from "./mapFunctions.js";
+// import { showRouteDashboard, findPlaces } from "./mapFunctions.js"; findPlaces unused
+import { showRouteDashboard } from "./mapFunctions.js";
 
 // Define the styling for the map container div
 // 100% width and height means it fills its parent container
@@ -27,12 +27,12 @@ function App() {
     const [selectedRouteIndex, setSelectedRouteIndex] = useState(null);
 
 
-    const navigate = useNavigate(); // <-- routing hook
+    // const navigate = useNavigate(); // <-- routing hook UNUSED
 
     // Go to dashboard
-    const goToDashboard = () => {
-        navigate("/dashboard");
-    };
+    // const goToDashboard = () => {
+    //     navigate("/dashboard");
+    // }; Unused
 
     // Get location on load
     useEffect(() => {
