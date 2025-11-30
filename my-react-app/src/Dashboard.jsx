@@ -27,7 +27,29 @@ function Dashboard() {
     const [selectedRouteIndex, setSelectedRouteIndex] = useState(null);
 
 
-    const navigate = useNavigate(); // <-- routing hook UNUSED
+    const navigate = useNavigate(); // <-- routing hook
+
+    useEffect(() => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) return;
+
+        const validate = async () => {
+            try{
+                const res = await fetch(`http://localhost:8080/api/auth/validate/${userId}`)
+                const data = await res.json()
+
+                if(!data.valid){
+                    localStorage.removeItem("userId")
+                    navigate("/", { replace: true });
+                }
+            } catch (err) {
+                console.error("Session validation failed: ", err);
+            }
+        };
+
+        validate();
+    
+    }, [navigate]);
 
     // If the user is not logged in, navigate to the home screen.
     useEffect(() => {

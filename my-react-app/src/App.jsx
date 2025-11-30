@@ -77,6 +77,29 @@ function HomePage() {
     navigate("/dashboard");
   };
 
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+
+    const validate = async () => {
+      try{
+        const res = await fetch(`http://localhost:8080/api/auth/validate/${userId}`)
+        const data = await res.json()
+
+        if(!data.valid){
+          localStorage.removeItem("userId")
+          setLoggedIn(false);
+          alert("Your account no longer exists. Please log in again.");
+        }
+      } catch (err) {
+        console.error("Session validation failed: ", err);
+      }
+    };
+
+    validate();
+    
+  }, []);
+
 
   // Get location on load, this is the intial starting point and may need to be saved in order to store previous routes.
   useEffect(() => {

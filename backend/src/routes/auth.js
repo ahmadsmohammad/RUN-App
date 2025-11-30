@@ -133,8 +133,33 @@ router.get("/routes/:userId", async (req, res) => {
       [userId]
     );
 
-    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Database error." });
+  }
+});
 
+// Validate the user account exists in the database (log out if database is cleared)
+router.get("/validate/:userId", async (req, res) => {
+  // Get the userID from the request
+  const { userId } = req.params;
+
+  try {
+    // Query the database to find users.
+    const [rows] = await db.query(
+      "SELECT id, FROM UserAccounts WHERE id = ?",
+      [userId]
+    );
+
+    // If no users are found, return an error 404 code and set valid to false.
+    if(rows.length == 0){
+      return res.status(404).json({ valid: false });
+    }
+
+    // Implies a user was found, return valid.
+    res.json({ valid: true });
+
+    // Error handling.
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Database error." });
