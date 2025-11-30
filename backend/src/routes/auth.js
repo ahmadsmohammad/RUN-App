@@ -101,7 +101,7 @@ router.post("/save", (req, res) => {
 
   const q = `
     INSERT INTO SavedRoutes 
-    (user_id, latitude, longitude, route_name, distance_m)
+    (id, latitude, longitude, route_name, distance_m)
     VALUES (?, ?, ?, ?, ?)
   `;
 
@@ -129,12 +129,37 @@ router.get("/routes/:userId", async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      "SELECT user_id, route_name, distance_m, latitude, longitude FROM SavedRoutes WHERE user_id = ?",
+      "SELECT id, route_name, distance_m, latitude, longitude FROM SavedRoutes WHERE id = ?",
       [userId]
     );
 
-    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Database error." });
+  }
+});
 
+// Validate the user account exists in the database (log out if database is cleared)
+router.get("/validate/:userId", async (req, res) => {
+  // Get the userID from the request
+  const { userId } = req.params;
+
+  try {
+    // Query the database to find users.
+    const [rows] = await db.query(
+      "SELECT id, FROM UserAccounts WHERE id = ?",
+      [userId]
+    );
+
+    // If no users are found, return an error 404 code and set valid to false.
+    if(rows.length == 0){
+      return res.status(404).json({ valid: false });
+    }
+
+    // Implies a user was found, return valid.
+    res.json({ valid: true });
+
+    // Error handling.
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Database error." });

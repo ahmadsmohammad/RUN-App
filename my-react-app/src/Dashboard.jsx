@@ -1,13 +1,13 @@
 // Import React hooks
 import { useState, useRef, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import Dashboard from "./Dashboard.jsx";   // <-- make sure this file exists
+import { useNavigate } from "react-router-dom";
 import "./App.css";
 import style from "/mapStyles/mapStyle.js";
 
 // Route Functions
-import { showRouteDashboard, findPlaces } from "./mapFunctions.js";
+// import { showRouteDashboard, findPlaces } from "./mapFunctions.js"; findPlaces unused
+import { showRouteDashboard } from "./mapFunctions.js";
 
 // Define the styling for the map container div
 // 100% width and height means it fills its parent container
@@ -17,7 +17,7 @@ const containerStyle = {
     height: "100%",
     borderRadius: "12px",
 };
-function App() {
+function Dashboard() {
 
     const [center, setCenter] = useState({ lat: 35.85, lng: -86.35 });
     const [places, setPlaces] = useState([]);
@@ -29,10 +29,41 @@ function App() {
 
     const navigate = useNavigate(); // <-- routing hook
 
+    useEffect(() => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) return;
+
+        const validate = async () => {
+            try{
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/validate/${userId}`)
+                const data = await res.json()
+
+                if(!data.valid){
+                    localStorage.removeItem("userId")
+                    navigate("/", { replace: true });
+                }
+            } catch (err) {
+                console.error("Session validation failed: ", err);
+            }
+        };
+
+        validate();
+    
+    }, [navigate]);
+
+    // If the user is not logged in, navigate to the home screen.
+    useEffect(() => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            navigate("/", { replace: true });
+        }
+        }, [navigate]);
+
+
     // Go to dashboard
-    const goToDashboard = () => {
-        navigate("/dashboard");
-    };
+    // const goToDashboard = () => {
+    //     navigate("/dashboard");
+    // }; Unused
 
     // Get location on load
     useEffect(() => {
@@ -59,7 +90,7 @@ function App() {
 
             const fetchSavedRoutes = async () => {
                     try {
-                        const res = await fetch(`http://localhost:8080/api/auth/routes/${userId}`);
+                        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/routes/${userId}`);
                         const data = await res.json();
                         
                         // Convert DB rows into Google Places-style objects
@@ -233,4 +264,4 @@ function App() {
     );
 }
 
-export default App;
+export default Dashboard;

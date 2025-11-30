@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 23, 2025 at 02:38 AM
+-- Generation Time: Nov 30, 2025 at 10:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,7 +30,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `SavedRoutes` (
   `id` int(11) DEFAULT NULL,
   `latitude` decimal(20,15) NOT NULL,
-  `longitude` decimal(20,15) NOT NULL
+  `longitude` decimal(20,15) NOT NULL,
+  `route_name` varchar(255) DEFAULT NULL,
+  `distance_m` double DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -72,7 +74,7 @@ ALTER TABLE `UserAccounts`
 -- AUTO_INCREMENT for table `UserAccounts`
 --
 ALTER TABLE `UserAccounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
@@ -83,12 +85,7 @@ ALTER TABLE `UserAccounts`
 --
 ALTER TABLE `SavedRoutes`
   ADD CONSTRAINT `SavedRoutes_ibfk_1` FOREIGN KEY (`id`) REFERENCES `UserAccounts` (`id`);
-  ADD COLUMN route_name VARCHAR(255);
-  ADD COLUMN distance_m DOUBLE;
-  ADD COLUMN user_id INT;
 COMMIT;
-
-
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

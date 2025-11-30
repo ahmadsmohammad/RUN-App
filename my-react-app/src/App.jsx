@@ -77,6 +77,29 @@ function HomePage() {
     navigate("/dashboard");
   };
 
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+
+    const validate = async () => {
+      try{
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/validate/${userId}`)
+        const data = await res.json()
+
+        if(!data.valid){
+          localStorage.removeItem("userId")
+          setLoggedIn(false);
+          alert("Your account no longer exists. Please log in again.");
+        }
+      } catch (err) {
+        console.error("Session validation failed: ", err);
+      }
+    };
+
+    validate();
+    
+  }, []);
+
 
   // Get location on load, this is the intial starting point and may need to be saved in order to store previous routes.
   useEffect(() => {
@@ -137,7 +160,7 @@ function HomePage() {
     };
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/save", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -189,6 +212,13 @@ function HomePage() {
     const pass = prompt("Enter a password:");
     console.log("New User:", user, pass);
   };
+
+  //Handle the user logging out
+  const handleLogout = () => {
+  localStorage.removeItem("userId");
+  setLoggedIn(false);
+};
+
 
   //Login Modal USe State Setters
   const openLoginModal = () => {
@@ -313,7 +343,10 @@ function HomePage() {
               )}
 
               {loggedIn && (
-                <button onClick={goToDashboard}>Dashboard</button>
+                <>
+                  <button onClick={goToDashboard}>Dashboard</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </>
               )}
           </div>
 
