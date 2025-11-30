@@ -47,6 +47,10 @@ function HomePage() {
   const [routes, setRoutes] = useState([]);
   const [placeType, setPlaceType] = useState("park");
   const [milePace, setMilePace] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(
+    !!localStorage.getItem("userId")
+  );
+
 
   // API stuff
   const mapRef = useRef(null);
@@ -58,6 +62,7 @@ function HomePage() {
   const [surface, setSurface] = useState("any");
   const [elevation, setElevation] = useState(0);
   const [mode, setMode] = useState("distance"); // "distance" or "time"
+  const [selectedRouteIndex, setSelectedRouteIndex] = useState(null);
 
   // Create Login/Registration modal states
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -105,6 +110,59 @@ function HomePage() {
   };
 
 
+  // Save the route to the users profile
+  const handleSaveRoute = async () => {
+    if (selectedRouteIndex === null) {
+      alert("Please select a route first!");
+      return;
+    }
+
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("You must be logged in to save routes.");
+      return;
+    }
+
+    const routeToSave = routes[selectedRouteIndex];
+
+    // Extract from Google Directions API
+    const leg = routeToSave.directions.routes[0].legs[0];
+
+    const payload = {
+      userId,
+      route_name: routeToSave.name,
+      distance_m: routeToSave.distance,
+      latitude: leg.end_location.lat(),
+      longitude: leg.end_location.lng()
+    };
+
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      // If backend returns HTML on 404, avoid JSON crash:
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { message: "Unexpected server response." };
+      }
+
+      if (res.ok) {
+        alert("Route saved successfully!");
+      } else {
+        alert(data.message || "Failed to save route.");
+      }
+
+    } catch (error) {
+      console.error("Save Route error:", error);
+      alert("Server error while saving route.");
+    }
+  };
+
 
   // Search for destinations based on the preferences that the user entered/selected.
   const handleFindPlaces = (callback) => {
@@ -125,13 +183,7 @@ function HomePage() {
   };
 
 
-    // Login Placeholders
-  const handleSignIn = () => {
-    const user = prompt("Enter your username:");
-    const pass = prompt("Enter your password:");
-    console.log("Login:", user, pass);
-  };
-
+  // Login
   const handleNewUser = () => {
     const user = prompt("Enter a username:");
     const pass = prompt("Enter a password:");
@@ -253,9 +305,16 @@ function HomePage() {
 
           {/* Buttons for login and dashboard */}
           <div className="button-row">
-            <button onClick={openLoginModal}>Login</button>
-            <button onClick={openRegisterModal}>Register</button>
-            <button onClick={goToDashboard}>Dashboard</button>
+              {!loggedIn && (
+                <>
+                  <button onClick={openLoginModal}>Login</button>
+                  <button onClick={openRegisterModal}>Register</button>
+                </>
+              )}
+
+              {loggedIn && (
+                <button onClick={goToDashboard}>Dashboard</button>
+              )}
           </div>
 
           {/* Button to show routes. This finds places based on the preferences then loads the colored routes */}
@@ -373,7 +432,65 @@ function HomePage() {
 
             {routes.length > 0 && (
               <div className="route-summary">
-                <h2>Your Routes</h2>
+                <div className="list-header">
+                  <h2>Found Routes</h2>
+                    {!loggedIn && (
+                    <>
+                      <button onClick={openLoginModal}>Save a Route</button>
+                    </>
+                  )}
+
+                  {/* THIS SHOULD SAVE A SELECTED ROUTE WHEN LOGGED IN  */}
+                  {loggedIn && (
+                    <button onClick={handleSaveRoute}>Save Route</button>
+                  )}
+                </div>
+
+
+
+                {routes.map((route, i) => (
+                  <div 
+                    key={i}
+                    className="route-item"
+                    onClick={() => setSelectedRouteIndex(i)}
+                    style={{
+                      cursor: "pointer",
+                      background: selectedRouteIndex === i 
+                        ? "rgba(0, 39, 146, 0.2)" 
+                        : "transparent",
+                      padding: "10px",
+                      borderRadius: "6px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px"
+                    }}
+                  >
+
+                    {/* Color Square */}
+                    <div 
+                      className="route-color"
+                      style={{
+                        backgroundColor: routeColors[i % routeColors.length],
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "3px"
+                      }}
+                    />
+
+                    {/* Text */}
+                    <div className="route-text">
+                      <p className="route-name">{route.name}</p>
+                      <p className="route-distance">
+                        {(route.distance / 1000).toFixed(2)} km
+                      </p>
+                    </div>
+
+                  </div>
+                ))}
+
+
+
+{/* 
 
                 {routes.map((route, i) => (
                   <div key={i} className="route-item">
@@ -388,7 +505,22 @@ function HomePage() {
                       </p>
                     </div>
                   </div>
-                ))}
+                ))} */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               </div>
             )}
 
@@ -411,7 +543,13 @@ function HomePage() {
       {showLoginModal && (
         <div className="modal-overlay" onClick={closeLoginModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <Login onClose={closeLoginModal}/>
+            <Login 
+              onClose={closeLoginModal}
+              onLoginSuccess={(userId) => {
+                localStorage.setItem("userId", userId);
+                setLoggedIn(true);
+              }}
+            />
               <button className="close-btn" onClick={closeLoginModal}>
                 Close
               </button>

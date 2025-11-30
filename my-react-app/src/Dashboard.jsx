@@ -50,26 +50,57 @@ function App() {
     }, []);
 
 
-    // Load the list of routes immediately
+    // Load the list of routes every few sec
     useEffect(() => {
         if (!mapRef.current) return;   // WAIT for map to load
 
-        findPlaces(
-            mapRef,
-            center,
-            5000,
-            "park",
-            30,
-            "one-way",
-            "any",
-            -1,
-            30,
-            "distance",
-            setPlaces,
-            (newPlaces) => {
-                handleShowAllRoutes(newPlaces);
-            }
-        );
+        const userId = localStorage.getItem("userId");
+            if (!userId) return;
+
+            const fetchSavedRoutes = async () => {
+                    try {
+                        const res = await fetch(`http://localhost:8080/api/auth/routes/${userId}`);
+                        const data = await res.json();
+                        
+                        // Convert DB rows into Google Places-style objects
+                        const compatiblePlaces = data.map(r => ({
+                            name: r.route_name,
+                            distance: r.distance_m,
+
+                            // For Google Places compatibility
+                            geometry: {
+                                location: {
+                                    lat: () => r.latitude,
+                                    lng: () => r.longitude
+                                }
+                            },
+
+                            // For DirectionsService compatibility
+                            destination: { lat: Number(r.latitude), lng: Number(r.longitude) }
+
+                        }));
+
+                        // This updates the list used by showRouteDashboard()
+                        setPlaces(compatiblePlaces);
+
+                        // Now safely build the routes
+                        showRouteDashboard(
+                            mapRef,
+                            center,
+                            compatiblePlaces,
+                            setRoutes,
+                            setSelectedRouteIndex
+                        );
+
+                    } catch (err) {
+                        console.error("Failed to fetch saved routes:", err);
+                    }
+                };
+
+            fetchSavedRoutes(); // initial load
+            const interval = setInterval(fetchSavedRoutes, 3000); // refresh every 3 sec
+
+            return () => clearInterval(interval);
     }, [mapRef.current]);
 
 
@@ -77,52 +108,6 @@ function App() {
     const handleMapLoad = (map) => {
         mapRef.current = map;
     };
-
-
-    // Show all routes
-    // 'places' needs to be made from queries rather than a place finding function.
-    const handleShowAllRoutes = (places) => {
-        showRouteDashboard(mapRef, center, places, setRoutes, setSelectedRouteIndex);
-    };
-
-
-    // We need a function that will build a list of places based on whats stored in the database. Should pass setPlaces as an argument
-    // ...
-
-    // 
-
-
-
-
-
-
-
-
-    // Fake login
-    const handleSignIn = () => {
-        const user = prompt("Enter your username:");
-        const pass = prompt("Enter your password:");
-        console.log("Login:", user, pass);
-    };
-
-    const handleNewUser = () => {
-        const user = prompt("Enter a username:");
-        const pass = prompt("Enter a password:");
-        console.log("New User:", user, pass);
-    };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -165,9 +150,16 @@ function App() {
                         />
 
                         {selectedRouteIndex !== null && (
-                        <DirectionsRenderer
-                            directions={routes[selectedRouteIndex].directions}
-                        />
+                            <DirectionsRenderer
+                                directions={routes[selectedRouteIndex].directions}
+                                options={{
+                                    polylineOptions: {
+                                    strokeColor: "#ff0000",
+                                    strokeWeight: 5,
+                                    strokeOpacity: 0.9
+                                    },
+                                }}
+                            />
                         )}
 
          
@@ -175,10 +167,18 @@ function App() {
                 </LoadScript>
             </div>
 
+
+
+
+
+
+
+
+
             {/* --------------- CENTER ---------------- */}
 
             <div className="dashboard-middle-container">
-                <h1>Previous Run Locations</h1>
+                <h1>Saved Locations</h1>
                 <p>Click one to see the way there</p>
 
 
@@ -208,9 +208,21 @@ function App() {
                     ))}
                 </div>
                 )}
-
-
             </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             {/* RIGHT SIDE: Info panel and button
            -------------------------------------------------------------- */}

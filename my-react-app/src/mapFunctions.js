@@ -116,15 +116,32 @@ export function showRouteDashboard(mapRef, center, places, setRoutes, setSelecte
 
   const fetchRoute = (index) => {
     if (index >= places.length) {
-      setRoutes(newRoutes);
-      setSelectedRouteIndex(null); // or 0 to auto-select
+      
+      setRoutes(prevRoutes => {
+        const sameLength = prevRoutes.length === newRoutes.length;
+
+        // Check if all routes match by destination coordinates
+        const isSame = sameLength && prevRoutes.every((r, i) => {
+          const a = r.directions.routes[0].legs[0].end_location;
+          const b = newRoutes[i].directions.routes[0].legs[0].end_location;
+          return a.lat() === b.lat() && a.lng() === b.lng();
+        });
+
+        // If routes are identical → DO NOT update state → NO jitter
+        if (isSame) return prevRoutes;
+
+        return newRoutes;
+      });
+
+      setSelectedRouteIndex((prevIndex) => {
+        return prevIndex !== null && prevIndex < newRoutes.length
+          ? prevIndex
+          : null;
+      });
       return;
     }
 
-    const destination = {
-      lat: places[index].geometry.location.lat(),
-      lng: places[index].geometry.location.lng(),
-    };
+    const destination = places[index].destination;
 
     service.route(
       {

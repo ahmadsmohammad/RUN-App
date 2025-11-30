@@ -2,6 +2,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
+console.log("Mounted auth routes at /api/auth");
 const router = express.Router(); // The router creates our /register endpoint.
 
 // Create the /register endpoint.
@@ -87,6 +88,59 @@ router.post("/login", async (req, res) => {
         res.status(500).json({ message: "Internal Server Error." });
     }
 });
+
+
+
+// Save a route
+router.post("/save", (req, res) => {
+  const { userId, latitude, longitude, route_name, distance_m } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Missing userId" });
+  }
+
+  const q = `
+    INSERT INTO SavedRoutes 
+    (user_id, latitude, longitude, route_name, distance_m)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    q,
+    [userId, latitude, longitude, route_name, distance_m],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Database error" });
+      }
+
+      return res.json({
+        message: "Route saved!",
+        routeId: result.insertId
+      });
+    }
+  );
+});
+
+
+// Load routes from a certain user id
+router.get("/routes/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      "SELECT user_id, route_name, distance_m, latitude, longitude FROM SavedRoutes WHERE user_id = ?",
+      [userId]
+    );
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Database error." });
+  }
+});
+
 
 // Export the endpoint module.
 module.exports = router;

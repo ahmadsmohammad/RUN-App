@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 // Create the registration modal.
-export default function Logib() {
+export default function Login( {onClose, onLoginSuccess }) {
     // Create the form and its setter.
     const [form, setForm] = useState({
         identifier: "",
@@ -35,6 +35,7 @@ export default function Logib() {
                 body: JSON.stringify(form)
             });
 
+
             // Get status from server
             const data = await res.json();
 
@@ -42,6 +43,10 @@ export default function Logib() {
                 setMessage(data.message || "Login failed.");
                 return;
             }
+
+            // console.log(message);
+
+            onLoginSuccess(data.userId);
 
             setMessage(data.message || "Login successful!");
 
