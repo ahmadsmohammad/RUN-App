@@ -101,7 +101,7 @@ router.post("/save", (req, res) => {
 
   const q = `
     INSERT INTO SavedRoutes 
-    (user_id, latitude, longitude, route_name, distance_m)
+    (id, latitude, longitude, route_name, distance_m)
     VALUES (?, ?, ?, ?, ?)
   `;
 
@@ -129,7 +129,7 @@ router.get("/routes/:userId", async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      "SELECT user_id, route_name, distance_m, latitude, longitude FROM SavedRoutes WHERE user_id = ?",
+      "SELECT id, route_name, distance_m, latitude, longitude FROM SavedRoutes WHERE id = ?",
       [userId]
     );
 
