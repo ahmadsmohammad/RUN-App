@@ -85,6 +85,7 @@ ALTER TABLE `SavedRoutes`
   ADD CONSTRAINT `SavedRoutes_ibfk_1` FOREIGN KEY (`id`) REFERENCES `UserAccounts` (`id`);
   ADD COLUMN route_name VARCHAR(255);
   ADD COLUMN distance_m DOUBLE;
+  ADD COLUMN user_id INT;
 COMMIT;
 
 
