@@ -190,6 +190,13 @@ function HomePage() {
     console.log("New User:", user, pass);
   };
 
+  //Handle the user logging out
+  const handleLogout = () => {
+  localStorage.removeItem("userId");
+  setLoggedIn(false);
+};
+
+
   //Login Modal USe State Setters
   const openLoginModal = () => {
     setShowLoginModal(true);
@@ -313,7 +320,10 @@ function HomePage() {
               )}
 
               {loggedIn && (
-                <button onClick={goToDashboard}>Dashboard</button>
+                <>
+                  <button onClick={goToDashboard}>Dashboard</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </>
               )}
           </div>
 
