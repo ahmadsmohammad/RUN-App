@@ -226,22 +226,9 @@ function App() {
 
             {/* RIGHT SIDE: Info panel and button
            -------------------------------------------------------------- */}
-            <div className="dashboard-right-container">
-                <div className="info-layout">
-                    <p>Pick which runs you have done already near you!</p>
 
-                    {/* Button that triggers the nearby restaurant search */}
-                    <div className="card">
-                        <select onChange={(e) => setRadius(Number(e.target.value))}>
-                            <option value="1609.34">1 Mile</option>
-                            <option value="3218.69">2 Miles</option>
-                            <option value="8046.72">5 Miles</option>
-                            <option value="16093.4">10 Miles</option>
-                        </select>
-                    </div>
-                </div>
 
-            </div>
+            
         </div>
     );
 }
