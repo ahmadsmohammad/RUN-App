@@ -1,7 +1,7 @@
 // Import React hooks
 import { useState, useRef, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
-// import { Routes, Route, useNavigate } from "react-router-dom"; All unused
+import { useNavigate } from "react-router-dom";
 import "./App.css";
 import style from "/mapStyles/mapStyle.js";
 
@@ -17,7 +17,7 @@ const containerStyle = {
     height: "100%",
     borderRadius: "12px",
 };
-function App() {
+function Dashboard() {
 
     const [center, setCenter] = useState({ lat: 35.85, lng: -86.35 });
     const [places, setPlaces] = useState([]);
@@ -27,7 +27,16 @@ function App() {
     const [selectedRouteIndex, setSelectedRouteIndex] = useState(null);
 
 
-    // const navigate = useNavigate(); // <-- routing hook UNUSED
+    const navigate = useNavigate(); // <-- routing hook UNUSED
+
+    // If the user is not logged in, navigate to the home screen.
+    useEffect(() => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            navigate("/", { replace: true });
+        }
+        }, [navigate]);
+
 
     // Go to dashboard
     // const goToDashboard = () => {
@@ -246,4 +255,4 @@ function App() {
     );
 }
 
-export default App;
+export default Dashboard;
