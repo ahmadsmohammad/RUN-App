@@ -1,7 +1,8 @@
 // Import React useStates
 import { useState } from "react";
+import LoadingSpinner from "./components/LoadingSpinner";
 
-// Create the registration modal.
+// Create the login modal.
 export default function Login( {onClose, onLoginSuccess }) {
     // Create the form and its setter.
     const [form, setForm] = useState({
@@ -9,8 +10,9 @@ export default function Login( {onClose, onLoginSuccess }) {
         password: ""
     });
 
-    // Registration status message useState.
+    // Login status message and loading icon useState.
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // Event handler for change in fields filled out.
     const handleChange = (e) => {
@@ -25,7 +27,8 @@ export default function Login( {onClose, onLoginSuccess }) {
         // Prevent the page from reloading
         e.preventDefault();
 
-        setMessage("")
+        setMessage("");
+        setLoading(true);
 
         // Send to Express server as a POST request.
         try{
@@ -57,6 +60,8 @@ export default function Login( {onClose, onLoginSuccess }) {
 
         } catch { // Catches an error (usually when the backend is offline).
             setMessage("Oops! That's embarassing... Something went wrong in the backend.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -87,9 +92,21 @@ export default function Login( {onClose, onLoginSuccess }) {
                 />
             </div>
 
-            <button type="submit">
-                Login
-            </button>
+            {/* BUTTON + LOADING INDICATOR */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", justifyContent: "center" }}>
+                {!loading && (
+                    <button type="submit" disabled={loading} style={{ width: "100%"}}>
+                        Login
+                    </button>)}
+                
+
+                {loading && (
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "center" }}>
+                        <LoadingSpinner />
+                        <span>Please wait...</span>
+                    </div>
+                )}
+            </div>
 
             {message && <p>{message}</p>}
         </form>
