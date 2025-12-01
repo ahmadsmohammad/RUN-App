@@ -1,6 +1,6 @@
 # RUN App
 
-Authors: Alec, Chris, Ahmad
+Authors: Alec Creasy, Chris Witt, Ahmad Mohammad
 
 ## Overview
 
