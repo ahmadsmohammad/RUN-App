@@ -153,6 +153,8 @@ function Dashboard() {
     // --------------------------------------------------------------------
     return (
         <div className="app-container">
+
+
             {/* LEFT SIDE: Map
            -------------------------------------------------------------- */}
 
@@ -209,6 +211,19 @@ function Dashboard() {
             {/* --------------- CENTER ---------------- */}
 
             <div className="dashboard-middle-container">
+                <h1>Navigation</h1>
+                <div className="button-row">
+                    <button onClick={() => navigate("/")}>Home</button>
+                    <button
+                    onClick={() => {
+                        localStorage.removeItem("userId");
+                        navigate("/", { replace: true });
+                    }}
+                    >
+                    Logout
+                    </button>
+                </div>
+
                 <h1>Saved Locations</h1>
                 <p>Click one to see the way there</p>
 
@@ -235,12 +250,40 @@ function Dashboard() {
                             {(route.distance / 1000).toFixed(2)} km
                         </p>
                         </div>
+
+                        {/* DELETE BUTTON FOR FUTURE
+                        <button
+                        onClick={async (e) => {
+                            e.stopPropagation(); // don’t trigger route selection
+
+                            const userId = localStorage.getItem("userId");
+                            try {
+                            const res = await fetch(
+                                `${import.meta.env.VITE_API_URL}/api/auth/delete/${route.routeId}`,
+                                { method: "DELETE" }
+                            );
+
+                            if (res.ok) {
+                                // Remove from UI now…
+                                setRoutes((prev) => prev.filter((_, idx) => idx !== i));
+                                // Dashboard refresh loop will also reload the clean list
+                            } else {
+                                alert("Failed to delete route.");
+                            }
+                            } catch (err) {
+                            console.error(err);
+                            alert("Server error.");
+                            }
+                        }}
+                        style={{ backgroundColor: "red", color: "white", marginLeft: "auto" }}
+                        >
+                        ✕
+                        </button>*/}
                     </div>
                     ))}
                 </div>
                 )}
             </div>
-
 
 
 
