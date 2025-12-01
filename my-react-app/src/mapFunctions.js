@@ -65,45 +65,91 @@ export function findPlaces(
 // === Show All Routes ===========
 // Generates the routes from the list of places. This shouldnt change much since finding the places is the hard part.
 export function showAllRoutes(mapRef, center, places, setRoutes) {
-  if (!center || places.length === 0) return;
-
-  const service = new window.google.maps.DirectionsService();
-  const newRoutes = [];
-
-  const fetchRoute = (index) => {
-    if (index >= places.length) {
-      setRoutes(newRoutes);
+  return new Promise((resolve) => {
+    if (!center || places.length === 0) {
+      resolve();
       return;
     }
 
-    const destination = {
-      lat: places[index].geometry.location.lat(),
-      lng: places[index].geometry.location.lng(),
+    const service = new window.google.maps.DirectionsService();
+    const newRoutes = [];
+
+    const fetchRoute = (index) => {
+      if (index >= places.length) {
+        setRoutes(newRoutes);
+        resolve();  // <-- VERY IMPORTANT
+        return;
+      }
+
+      const destination = {
+        lat: places[index].geometry.location.lat(),
+        lng: places[index].geometry.location.lng(),
+      };
+
+      service.route(
+        {
+          origin: center,
+          destination,
+          travelMode: window.google.maps.TravelMode.WALKING,
+        },
+        (result, status) => {
+          if (status === "OK") {
+            newRoutes.push({
+              directions: result,
+              distance: result.routes[0].legs[0].distance.value,
+              name: places[index].name,
+            });
+          }
+
+          // Space out API calls
+          setTimeout(() => fetchRoute(index + 1), 200);
+        }
+      );
     };
 
-    service.route(
-      {
-        origin: center,
-        destination,
-        travelMode: window.google.maps.TravelMode.WALKING,
-      },
-      (result, status) => {
-        if (status === "OK") {
-          // newRoutes.push(result);
-          newRoutes.push({
-            directions: result,
-            distance: result.routes[0].legs[0].distance.value, // meters
-            name: places[index].name
-          });
-        }
-
-        setTimeout(() => fetchRoute(index + 1), 200);
-      }
-    );
-  };
-
-  fetchRoute(0);
+    fetchRoute(0);
+  });
 }
+// export function showAllRoutes(mapRef, center, places, setRoutes) {
+//   if (!center || places.length === 0) return;
+
+//   const service = new window.google.maps.DirectionsService();
+//   const newRoutes = [];
+
+//   const fetchRoute = (index) => {
+//     if (index >= places.length) {
+//       setRoutes(newRoutes);
+//       return;
+//     }
+
+//     const destination = {
+//       lat: places[index].geometry.location.lat(),
+//       lng: places[index].geometry.location.lng(),
+//     };
+
+//     service.route(
+//       {
+//         origin: center,
+//         destination,
+//         travelMode: window.google.maps.TravelMode.WALKING,
+//       },
+//       (result, status) => {
+//         if (status === "OK") {
+//           // newRoutes.push(result);
+//           newRoutes.push({
+//             directions: result,
+//             distance: result.routes[0].legs[0].distance.value, // meters
+//             name: places[index].name
+//           });
+//         }
+
+//         setTimeout(() => fetchRoute(index + 1), 200);
+//       }
+//     );
+//   };
+
+//   fetchRoute(0);
+// }
 
 
 // === Show Individial Routes ===========

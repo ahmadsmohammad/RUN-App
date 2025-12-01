@@ -5,6 +5,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard.jsx";
 import Register from "./Register.jsx"
 import Login from "./Login.jsx"
+import LoadingSpinner from "./components/LoadingSpinner";
 
 // Import css and google map theme. Theme is stored in that mapStyles folder
 import "./App.css";
@@ -68,6 +69,9 @@ function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
+  // Loading state for loading icon
+  const [loading, setLoading] = useState(false);
+
 
   // Navigation variable
   const navigate = useNavigate();
@@ -129,7 +133,7 @@ function HomePage() {
 
   // Show all routes, called after places are found.
   const handleShowAllRoutes = (results) => {
-    showAllRoutes(mapRef, center, results, setRoutes);
+    return showAllRoutes(mapRef, center, results, setRoutes);
   };
 
 
@@ -188,22 +192,40 @@ function HomePage() {
 
 
   // Search for destinations based on the preferences that the user entered/selected.
-  const handleFindPlaces = (callback) => {
-  findPlaces(
-    mapRef,
-    center,
-    distance,
-    placeType,
-    timeGoal,
-    shape,
-    surface,
-    elevation,
-    milePace,
-    mode,
-    setPlaces,
-    callback
-    );
+  const handleFindPlaces = () => {
+    return new Promise((resolve) => {
+      findPlaces(
+        mapRef,
+        center,
+        distance,
+        placeType,
+        timeGoal,
+        shape,
+        surface,
+        elevation,
+        milePace,
+        mode,
+        setPlaces,
+        (results) => resolve(results)
+      );
+    });
   };
+  // const handleFindPlaces = (callback) => {
+  // findPlaces(
+  //   mapRef,
+  //   center,
+  //   distance,
+  //   placeType,
+  //   timeGoal,
+  //   shape,
+  //   surface,
+  //   elevation,
+  //   milePace,
+  //   mode,
+  //   setPlaces,
+  //   callback
+  //   );
+  // };
 
 
   // Login
@@ -353,17 +375,39 @@ function HomePage() {
           {/* Button to show routes. This finds places based on the preferences then loads the colored routes */}
           <div className="card">
             <h2>Find places to run </h2>
-            <button
-              onClick={() => {
-                handleFindPlaces((results) => {
-                  setRoutes([]);
-                  // run AFTER places are ready
-                  handleShowAllRoutes(results);
-                });
-              }}
-            >
-              Show Routes
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button
+                onClick={async () => {
+                  setLoading(true);
+                  setRoutes([]); // clear old routes
+
+                  try{
+                    // 1. get places
+                    const placesFound = await handleFindPlaces();
+
+                    // 2. show the routes
+                    await handleShowAllRoutes(placesFound);
+
+                    // const results = await handleFindPlaces((placesReady) => {
+                    //   setRoutes([]);
+                    //   handleShowAllRoutes(placesReady);
+                    // });
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Show Routes"}
+              </button>
+
+              {loading && (
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <LoadingSpinner />
+                  <span>Please wait...</span>
+                </div>
+              )}
+            </div>
           </div>
 
 
