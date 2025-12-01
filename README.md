@@ -151,27 +151,27 @@ The outputs include routes fitting the input criteria, as well as any saved rout
 
 # Features
 
--Route Finder 
--Login Page
--Saving Favorite routes
--Customizable routes (Elevvation, Distance Target, etc.)
+- Route Finder 
+- Login Page
+- Saving Favorite routes
+- Customizable routes (Elevvation, Distance Target, etc.)
 
 ### Potential Future Features
 
--Secure Password Requirements
--Best Time (maybe by built-in stopwatch)
--Button to locate you,
--Textbox for the number of miles or meters
--Goals: time, miles, amount per week
+- Secure Password Requirements
+- Best Time (maybe by built-in stopwatch)
+- Button to locate you,
+- Textbox for the number of miles or meters
+- Goals: time, miles, amount per week
 
 # Acknowledgements
 
 ### Tech Stack
 
--JavaScript/TypeScript (Langauge)
--React (Frontend)
--Google Maps API (Location)
--MySQL (Database),
--Express (Backend),
--Bcrypt (For encrypting passwords),
--Apache XAMPP (Web Server Control Panel)
+- JavaScript/TypeScript (Langauge)
+- React (Frontend)
+- Google Maps API (Location)
+- MySQL (Database),
+- Express (Backend),
+- Bcrypt (For encrypting passwords),
+- Apache XAMPP (Web Server Control Panel)
