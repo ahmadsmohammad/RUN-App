@@ -166,7 +166,7 @@ The outputs include routes fitting the input criteria, as well as any saved rout
 
 # Acknowledgements
 
-## Tech Stack
+### Tech Stack
 
 -JavaScript/TypeScript (Langauge)
 -React (Frontend)
