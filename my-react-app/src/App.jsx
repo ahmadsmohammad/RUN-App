@@ -210,23 +210,6 @@ function HomePage() {
       );
     });
   };
-  // const handleFindPlaces = (callback) => {
-  // findPlaces(
-  //   mapRef,
-  //   center,
-  //   distance,
-  //   placeType,
-  //   timeGoal,
-  //   shape,
-  //   surface,
-  //   elevation,
-  //   milePace,
-  //   mode,
-  //   setPlaces,
-  //   callback
-  //   );
-  // };
-
 
   // Login
   const handleNewUser = () => {
@@ -388,10 +371,6 @@ function HomePage() {
                     // 2. show the routes
                     await handleShowAllRoutes(placesFound);
 
-                    // const results = await handleFindPlaces((placesReady) => {
-                    //   setRoutes([]);
-                    //   handleShowAllRoutes(placesReady);
-                    // });
                   } finally {
                     setLoading(false);
                   }

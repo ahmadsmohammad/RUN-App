@@ -110,47 +110,6 @@ export function showAllRoutes(mapRef, center, places, setRoutes) {
     fetchRoute(0);
   });
 }
-// export function showAllRoutes(mapRef, center, places, setRoutes) {
-//   if (!center || places.length === 0) return;
-
-//   const service = new window.google.maps.DirectionsService();
-//   const newRoutes = [];
-
-//   const fetchRoute = (index) => {
-//     if (index >= places.length) {
-//       setRoutes(newRoutes);
-//       return;
-//     }
-
-//     const destination = {
-//       lat: places[index].geometry.location.lat(),
-//       lng: places[index].geometry.location.lng(),
-//     };
-
-//     service.route(
-//       {
-//         origin: center,
-//         destination,
-//         travelMode: window.google.maps.TravelMode.WALKING,
-//       },
-//       (result, status) => {
-//         if (status === "OK") {
-//           // newRoutes.push(result);
-//           newRoutes.push({
-//             directions: result,
-//             distance: result.routes[0].legs[0].distance.value, // meters
-//             name: places[index].name
-//           });
-//         }
-
-//         setTimeout(() => fetchRoute(index + 1), 200);
-//       }
-//     );
-//   };
-
-//   fetchRoute(0);
-// }
-
 
 // === Show Individial Routes ===========
 // Shows the route that you click on
