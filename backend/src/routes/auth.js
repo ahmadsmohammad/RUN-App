@@ -179,6 +179,5 @@ router.get("/validate/:userId", async (req, res) => {
   }
 });
 
-
 // Export the endpoint module.
 module.exports = router;
