@@ -158,6 +158,7 @@ The outputs include routes fitting the input criteria, as well as any saved rout
 
 ### Potential Future Features
 
+- Add a administrator pipeline for better logging and easier management.
 - Secure Password Requirements
 - Best Time (maybe by built-in stopwatch)
 - Button to locate you,
