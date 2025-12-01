@@ -147,7 +147,7 @@ router.get("/validate/:userId", async (req, res) => {
   try {
     // Query the database to find users.
     const [rows] = await db.query(
-      "SELECT id, FROM UserAccounts WHERE id = ?",
+      "SELECT id FROM UserAccounts WHERE id = ?",
       [userId]
     );
 
