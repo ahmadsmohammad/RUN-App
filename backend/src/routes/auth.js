@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 console.log("Mounted auth routes at /api/auth");
-const router = express.Router(); // The router creates our /register endpoint.
+const router = express.Router(); // The router creates our API endpoints.
 
 // Create the /register endpoint.
 router.post("/register", async (req, res) => {
