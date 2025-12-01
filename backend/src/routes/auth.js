@@ -92,34 +92,45 @@ router.post("/login", async (req, res) => {
 
 
 // Save a route
-router.post("/save", (req, res) => {
+router.post("/save", async (req, res) => {
+  // Get route details
   const { userId, latitude, longitude, route_name, distance_m } = req.body;
 
-  if (!userId) {
-    return res.status(400).json({ message: "Missing userId" });
-  }
+  try{
+    // If some data is missing, report an error and return.
+    if (!userId || !latitude || !longitude || !route_name || !distance_m) {
+      return res.status(400).json({ message: "Missing Route/User Data to Save" });
+    }
 
-  const q = `
-    INSERT INTO SavedRoutes 
-    (id, latitude, longitude, route_name, distance_m)
-    VALUES (?, ?, ?, ?, ?)
-  `;
+    // Check to see if the user has already saved this route.
+    const [existing] = await db.query(
+      `SELECT id FROM SavedRoutes 
+       WHERE id = ? AND latitude = ? AND longitude = ? LIMIT 1`,
+      [userId, latitude, longitude]
+    );
 
-  db.query(
-    q,
-    [userId, latitude, longitude, route_name, distance_m],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: "Database error" });
-      }
-
-      return res.json({
-        message: "Route saved!",
-        routeId: result.insertId
+    // If the route has already been saved, report an error and return.
+    if (existing.length > 0) {
+      return res.status(409).json({
+        message: "You already saved this route!"
       });
     }
-  );
+
+    // If the route is not saved, save it to the database.
+    const result = await db.query(
+      "INSERT INTO SavedRoutes (id, latitude, longitude, route_name, distance_m) VALUES (?, ?, ?, ?, ?)",
+      [userId, latitude, longitude, route_name, distance_m]
+    );
+
+    // Return successfully.
+    return res.status(201).json({
+      message: "Route saved!",
+      routeId: result.insertId
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An unexpected error has occured. Please try again later." });
+  }
 });
 
 
@@ -132,6 +143,8 @@ router.get("/routes/:userId", async (req, res) => {
       "SELECT id, route_name, distance_m, latitude, longitude FROM SavedRoutes WHERE id = ?",
       [userId]
     );
+
+    return res.json(rows);
 
   } catch (err) {
     console.error(err);
