@@ -154,7 +154,7 @@ The outputs include routes fitting the input criteria, as well as any saved rout
 - Route Finder 
 - Login Page
 - Saving Favorite routes
-- Customizable routes (Elevvation, Distance Target, etc.)
+- Customizable routes (Elevation, Distance Target, etc.)
 
 ### Potential Future Features
 
